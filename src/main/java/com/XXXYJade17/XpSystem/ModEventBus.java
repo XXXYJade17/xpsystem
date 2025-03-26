@@ -1,5 +1,6 @@
 package com.XXXYJade17.XpSystem;
 
+import com.XXXYJade17.XpSystem.Capability.ModCapabilities;
 import com.XXXYJade17.XpSystem.Capability.PlayerXpProvider;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.bus.api.SubscribeEvent;
