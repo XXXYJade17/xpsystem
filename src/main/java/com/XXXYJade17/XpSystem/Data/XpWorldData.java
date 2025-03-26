@@ -19,16 +19,6 @@ import java.util.function.Supplier;
 public class XpWorldData extends SavedData {
     private static final String DATA_NAME = "XpData";
     private final Map<UUID, PlayerXp> playerXpData = new HashMap<>();
-    private static XpWorldData instance;
-
-    private XpWorldData() {}
-
-    public static synchronized XpWorldData getInstance() {
-        if (instance == null) {
-            instance = new XpWorldData();
-        }
-        return instance;
-    }
 
     public static XpWorldData load(CompoundTag nbt) {
         XpWorldData data = new XpWorldData();
