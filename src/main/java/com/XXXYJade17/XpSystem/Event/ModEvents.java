@@ -18,10 +18,11 @@ import org.slf4j.Logger;
 
 import java.util.Optional;
 
+@Mod.EventBusSubscriber(modid = XpSystem.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
     private static final int TICKS_PER_MINUTE = 5*20;
     private static int tickCounter = 0;
-    private final Logger LOGGER = XpSystem.getLOGGER();
+    private static final Logger LOGGER = XpSystem.getLOGGER();
 
     private static ModEvents INSTANCE;
 
@@ -33,25 +34,26 @@ public class ModEvents {
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if(event.side == LogicalSide.SERVER) {
             Optional<PlayerXp> optionalPlayerXp = Optional.ofNullable(event.player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));
             optionalPlayerXp.ifPresent(xp -> {
-                tickCounter++;
-                if(tickCounter >= TICKS_PER_MINUTE) {
+                if(++tickCounter >= TICKS_PER_MINUTE) {
+                    LOGGER.info("tickcounter:{}",tickCounter);
                     tickCounter = 0;
                     xp.addXp(1);
-                    PacketDistributor.PLAYER.with((ServerPlayer) event.player)
-                            .send(new XpData(xp.getXp(), xp.getLevel()));
-                    event.player.sendSystemMessage(Component.literal("XP +1"));
+                    if(event.player instanceof ServerPlayer player) {
+                        PacketDistributor.PLAYER.with(player)
+                                .send(new XpData(xp.getXp(), xp.getLevel()));
+                        player.sendSystemMessage(Component.literal("XP +1"));
+                    }
                 }
-                LOGGER.info("tickcounter:{}",tickCounter);
             });
         }
     }
 
     @SubscribeEvent
-    public void onPlayerJoin(EntityJoinLevelEvent event) {
+    public static void onPlayerJoin(EntityJoinLevelEvent event) {
         if(!event.getLevel().isClientSide()) {
             if (event.getEntity() instanceof ServerPlayer player) {
                 Optional<PlayerXp> optionalPlayerXp = Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));

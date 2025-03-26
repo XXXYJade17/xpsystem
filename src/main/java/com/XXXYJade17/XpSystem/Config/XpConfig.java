@@ -5,8 +5,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -20,7 +22,11 @@ public class XpConfig {
     private static final Map<Integer, Integer> levelXpMap = new HashMap<>();
     private static final Logger LOGGER = XpSystem.getLOGGER();;
     private static final Gson gson = new Gson();
-    private static JsonObject xpconfig;
+    private static final XpConfig INSTANCE= new XpConfig();
+
+    public static XpConfig getINSTANCE() {
+        return INSTANCE;
+    }
 
     public XpConfig(){
         load();
@@ -36,22 +42,18 @@ public class XpConfig {
                 try (InputStream inputStream = XpConfig.class.getResourceAsStream("/config/xpsystem/xpconfig.json")) {
                     if (inputStream != null) {
                         Files.copy(inputStream, xpConfigPath);
-                        LOGGER.info("XpConfig has loaded!");
                     } else {
                         LOGGER.warn("XpConfig is empty!");
                         return;
                     }
                 }
             }
-
-            try (Reader reader = Files.newBufferedReader(xpConfigPath, StandardCharsets.UTF_8)) {
-                JsonElement element = JsonParser.parseReader(reader);
-                JsonObject object = element.getAsJsonObject();
-                object.entrySet().forEach(entry -> {
-                    int level = Integer.parseInt(entry.getKey());
-                    int xp = entry.getValue().getAsInt();
-                    levelXpMap.put(level, xp);
-                });
+            try(FileReader reader = new FileReader(xpConfigPath.toFile())) {
+                Map<Integer, Integer> loadedXp = gson.fromJson(reader, new TypeToken<Map<Integer, Integer>>() {}.getType());
+                if (loadedXp != null) {
+                    levelXpMap.putAll(loadedXp);
+                }
+                LOGGER.info("XpConfig has loaded!");
             }
         } catch (IOException e) {
             LOGGER.error("XpConfig is failed to load : ",e);

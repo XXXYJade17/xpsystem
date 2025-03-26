@@ -1,5 +1,6 @@
 package com.XXXYJade17.XpSystem;
 
+import com.XXXYJade17.XpSystem.Config.XpConfig;
 import com.XXXYJade17.XpSystem.Event.ModEvents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -18,11 +19,12 @@ public class XpSystem {
     public static final String MODID = "xpsystem";
     private static Logger LOGGER=LogUtils.getLogger();
     private static ModEvents modEvents;
+    private static XpConfig xpconfig;
 
     public XpSystem(IEventBus modEventBus, ModContainer modContainer){
-        modEvents=ModEvents.getINSTANCE();
-
-        NeoForge.EVENT_BUS.register(modEvents);
+//        modEvents=ModEvents.getINSTANCE();
+        xpconfig=XpConfig.getINSTANCE();
+        NeoForge.EVENT_BUS.register(ModEvents.class);
     }
 
     public static Logger getLOGGER(){

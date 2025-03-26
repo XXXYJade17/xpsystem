@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 public class PlayerXp {
     private int xp=0;
     private int level = 1;
+    private int requiredXp = XpConfig.getRequiredXp(level);
 
     public int getXp(){
         return this.xp;
@@ -15,16 +16,17 @@ public class PlayerXp {
         return this.level;
     }
 
-    public int getRequiredXp() {
-        return XpConfig.getRequiredXp(level);
-    }
-
     public void addXp(int xp){
         this.xp+=xp;
-        while (this.xp >= getRequiredXp()) {
-            this.xp -= getRequiredXp();
+        while (this.xp >= this.requiredXp) {
+            this.xp -= this.requiredXp;
             level++;
+            updateRequiredXp();
         }
+    }
+
+    public void updateRequiredXp() {
+        this.requiredXp = XpConfig.getRequiredXp(level);
     }
 
     public void saveData(CompoundTag nbt) {
