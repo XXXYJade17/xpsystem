@@ -1,7 +1,6 @@
 package com.XXXYJade17.XpSystem;
 
 import com.XXXYJade17.XpSystem.Capability.PlayerXp;
-import com.XXXYJade17.XpSystem.Capability.XpSystem;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 

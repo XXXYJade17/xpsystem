@@ -1,6 +1,8 @@
 package com.XXXYJade17.XpSystem.NetWork;
 
-import com.XXXYJade17.XpSystem.Capability.XpSystem;
+import com.XXXYJade17.XpSystem.XpSystem;
+import com.XXXYJade17.XpSystem.NetWork.Client.ClientPayloadHandler;
+import com.XXXYJade17.XpSystem.NetWork.Server.ServerPayloadHandler;
 import com.XXXYJade17.XpSystem.XpData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -13,7 +15,7 @@ public class NetWork {
     public static void registerPackets(RegisterPayloadHandlerEvent event) {
         IPayloadRegistrar registrar = event.registrar(XpSystem.MODID);
         registrar.play(XpData.ID, XpData::new, handler ->
-                handler.client(ClientPayloadHandler::handleXpData)
-                        .server(ServerPayloadHandler::handleXpData));
+                handler.client(ClientPayloadHandler.getINSTANCE()::handleXpData)
+                        .server(ServerPayloadHandler.getINSTANCE()::handleXpData));
     }
 }

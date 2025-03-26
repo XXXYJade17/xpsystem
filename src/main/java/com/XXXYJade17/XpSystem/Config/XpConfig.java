@@ -1,6 +1,6 @@
 package com.XXXYJade17.XpSystem.Config;
 
-import com.XXXYJade17.XpSystem.Capability.XpSystem;
+import com.XXXYJade17.XpSystem.XpSystem;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

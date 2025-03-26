@@ -1,14 +1,12 @@
 package com.XXXYJade17.XpSystem.Hud;
 
-import com.XXXYJade17.XpSystem.Capability.XpSystem;
+import com.XXXYJade17.XpSystem.XpSystem;
 import com.XXXYJade17.XpSystem.Config.XpConfig;
-import com.XXXYJade17.XpSystem.NetWork.ClientPayloadHandler;
+import com.XXXYJade17.XpSystem.NetWork.Client.ClientPayloadHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-
-import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
 public class XpHud {

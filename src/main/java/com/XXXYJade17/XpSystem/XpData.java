@@ -1,10 +1,8 @@
 package com.XXXYJade17.XpSystem;
 
-import com.XXXYJade17.XpSystem.Capability.XpSystem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public record XpData(int xp, int level) implements CustomPacketPayload {
     public static final ResourceLocation ID = new ResourceLocation(XpSystem.MODID, "xp_data");

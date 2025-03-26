@@ -8,11 +8,11 @@ public class PlayerXp {
     private int level = 1;
 
     public int getXp(){
-        return xp;
+        return this.xp;
     }
 
     public int getLevel() {
-        return level;
+        return this.level;
     }
 
     public int getRequiredXp() {

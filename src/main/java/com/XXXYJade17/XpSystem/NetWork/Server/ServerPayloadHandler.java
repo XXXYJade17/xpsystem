@@ -1,4 +1,4 @@
-package com.XXXYJade17.XpSystem.NetWork;
+package com.XXXYJade17.XpSystem.NetWork.Server;
 
 import com.XXXYJade17.XpSystem.Capability.ModCapabilities;
 import com.XXXYJade17.XpSystem.XpData;
@@ -9,7 +9,16 @@ import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import java.util.Optional;
 
 public class ServerPayloadHandler {
-    public static void handleXpData(XpData data, PlayPayloadContext context) {
+    private static ServerPayloadHandler INSTANCE;
+
+    public static ServerPayloadHandler getINSTANCE() {
+        if(INSTANCE==null){
+            INSTANCE=new ServerPayloadHandler();
+        }
+        return INSTANCE;
+    }
+
+    public void handleXpData(XpData data, PlayPayloadContext context) {
         context.player().ifPresent(player -> {
             if (player instanceof ServerPlayer serverPlayer) {
                 Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER))
