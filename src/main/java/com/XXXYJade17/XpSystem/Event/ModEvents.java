@@ -37,13 +37,15 @@ public class ModEvents {
         if(event.side == LogicalSide.SERVER) {
             Optional<PlayerXp> optionalPlayerXp = Optional.ofNullable(event.player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));
             optionalPlayerXp.ifPresent(xp -> {
-                if(++tickCounter >= TICKS_PER_MINUTE) {
+                tickCounter++;
+                if(tickCounter >= TICKS_PER_MINUTE) {
                     tickCounter = 0;
                     xp.addXp(1);
                     PacketDistributor.PLAYER.with((ServerPlayer) event.player)
                             .send(new XpData(xp.getXp(), xp.getLevel()));
                     event.player.sendSystemMessage(Component.literal("XP +1"));
                 }
+                LOGGER.info("tickcounter:{}",tickCounter);
             });
         }
     }
