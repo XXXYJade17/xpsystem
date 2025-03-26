@@ -17,20 +17,31 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class XpWorldData extends SavedData {
-    private static final String DATA_NAME = "XpData";
+    private static final String DATA_NAME = "xp_data";
     private final Map<UUID, PlayerXp> playerXpData = new HashMap<>();
+
+    public static XpWorldData create() {
+        return new XpWorldData();
+    }
 
     public static XpWorldData load(CompoundTag nbt) {
         XpWorldData data = new XpWorldData();
         ListTag playerList = nbt.getList("Players", Tag.TAG_COMPOUND);
         for (int i = 0; i < playerList.size(); i++) {
-            CompoundTag playerNbt = playerList.getCompound(i);
+            CompoundTag playerNbt = playerList.getCompound(i);  //
             UUID uuid = playerNbt.getUUID("UUID");
             PlayerXp xp = new PlayerXp();
             xp.loadData(playerNbt.getCompound("XpData"));
             data.playerXpData.put(uuid, xp);
         }
         return data;
+    }
+
+    public static XpWorldData get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(
+                new SavedData.Factory<>(XpWorldData::create, XpWorldData::load),
+                DATA_NAME
+        );
     }
 
     @Override
@@ -56,10 +67,11 @@ public class XpWorldData extends SavedData {
         Optional<PlayerXp> optionalXp = Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));
         optionalXp.ifPresent(xp -> {
             playerXpData.put(player.getUUID(), xp);
-            setDirty();
+            setDirty(); // 必须调用，否则数据不会保存
         });
     }
 
+    // 加载玩家数据（从存储中读取）
     public void loadPlayerXp(Player player) {
         PlayerXp xp = getPlayerXp(player.getUUID());
         Optional<PlayerXp> optionalXp = Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));

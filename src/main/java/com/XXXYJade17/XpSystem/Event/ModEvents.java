@@ -50,7 +50,9 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerJoin(EntityJoinLevelEvent event) {
         if(!event.getLevel().isClientSide()) {
-            if (event.getEntity() instanceof ServerPlayer player) {
+            if (event.getEntity() instanceof ServerPlayer player&& event.getLevel() instanceof ServerLevel serverLevel) {
+                XpWorldData data = XpWorldData.get(serverLevel);
+                data.loadPlayerXp(player);
                 Optional<PlayerXp> optionalPlayerXp = Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));
                 optionalPlayerXp.ifPresent(xp -> {
                     CompoundTag playerData = player.getPersistentData();
@@ -68,7 +70,9 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerLeave(EntityLeaveLevelEvent event) {
         if (!event.getLevel().isClientSide()){
-            if(event.getEntity() instanceof ServerPlayer player) {
+            if(event.getEntity() instanceof ServerPlayer player&& event.getLevel() instanceof ServerLevel serverLevel) {
+                XpWorldData data = XpWorldData.get(serverLevel);
+                data.savePlayerXp(player);
             }
         }
     }
