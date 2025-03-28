@@ -1,30 +1,32 @@
 package com.XXXYJade17.XpSystem.Data;
 
-import com.XXXYJade17.XpSystem.XpData;
 import com.XXXYJade17.XpSystem.Capability.ModCapabilities;
 import com.XXXYJade17.XpSystem.Capability.PlayerXp;
+import com.XXXYJade17.XpSystem.XpSystem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
-
+import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
+
 
 public class XpWorldData extends SavedData {
     private static final String DATA_NAME = "xp_data";
     private final Map<UUID, PlayerXp> playerXpData = new HashMap<>();
+    private static final Logger LOGGER= XpSystem.getLOGGER();
 
     public static XpWorldData create() {
         return new XpWorldData();
     }
 
     public static XpWorldData load(CompoundTag nbt) {
+        LOGGER.info("Loading player XP data...");
         XpWorldData data = new XpWorldData();
         ListTag playerList = nbt.getList("Players", Tag.TAG_COMPOUND);
         for (int i = 0; i < playerList.size(); i++) {
@@ -34,6 +36,7 @@ public class XpWorldData extends SavedData {
             xp.loadData(playerNbt.getCompound("XpData"));
             data.playerXpData.put(uuid, xp);
         }
+        LOGGER.info("Player XP data loaded successfully.");
         return data;
     }
 
@@ -46,6 +49,7 @@ public class XpWorldData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag nbt) {
+        LOGGER.info("Saving player XP data...");
         ListTag playerList = new ListTag();
         for (Map.Entry<UUID, PlayerXp> entry : playerXpData.entrySet()) {
             CompoundTag playerNbt = new CompoundTag();
@@ -56,6 +60,7 @@ public class XpWorldData extends SavedData {
             playerList.add(playerNbt);
         }
         nbt.put("Players", playerList);
+        LOGGER.info("Player XP data saved successfully.");
         return nbt;
     }
 

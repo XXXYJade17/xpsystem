@@ -8,8 +8,10 @@ import com.XXXYJade17.XpSystem.XpSystem;
 import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.Mod;
@@ -17,6 +19,8 @@ import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.slf4j.Logger;
 
@@ -51,7 +55,7 @@ public class ModEvents {
     public static void onPlayerJoin(EntityJoinLevelEvent event) {
         if(!event.getLevel().isClientSide()) {
             if (event.getEntity() instanceof ServerPlayer player&& event.getLevel() instanceof ServerLevel serverLevel) {
-                XpWorldData data = XpWorldData.get(serverLevel);
+                XpWorldData data = XpWorldData.get(serverLevel );
                 data.loadPlayerXp(player);
                 Optional<PlayerXp> optionalPlayerXp = Optional.ofNullable(player.getCapability(ModCapabilities.PLAYER_XP_HANDLER));
                 optionalPlayerXp.ifPresent(xp -> {
@@ -61,7 +65,7 @@ public class ModEvents {
                         xp.loadData(xpData);
                     PacketDistributor.PLAYER.with(player)
                             .send(new XpData(xp.getXp(), xp.getLevel()));
-//                    LOGGER.info("Player {} has XP: {} and Level: {}", player.getName().getString(), xp.getXp(), xp.getLevel());
+                    LOGGER.info("Player {} has XP: {} and Level: {}", player.getName().getString(), xp.getXp(), xp.getLevel());
                 }});
             }
         }
@@ -73,7 +77,34 @@ public class ModEvents {
             if(event.getEntity() instanceof ServerPlayer player&& event.getLevel() instanceof ServerLevel serverLevel) {
                 XpWorldData data = XpWorldData.get(serverLevel);
                 data.savePlayerXp(player);
+                LOGGER.info("Saved {} XP data.",player);
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onServerClose(ServerStoppedEvent event) {
+        MinecraftServer server = event.getServer();
+        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+        if (overworld != null) {
+            XpWorldData data = XpWorldData.get(overworld);
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                data.savePlayerXp(player);
+            }
+            LOGGER.info("Saved player XP data.");
+        }
+    }
+
+//    @SubscribeEvent
+//    public static void onServerStart(ServerStartedEvent event){
+//        MinecraftServer server = event.getServer();
+//        ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+//        if(overworld != null) {
+//            XpWorldData data = XpWorldData.get(overworld);
+//            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+//                data.loadPlayerXp(player);
+//            }
+//            LOGGER.info("Loaded player XP data.");
+//        }
+//    }
 }
